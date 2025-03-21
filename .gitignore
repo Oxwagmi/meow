@@ -1,0 +1,4 @@
+/target
+.env
+test.json
+/src/solana/cctp/
