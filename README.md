@@ -1,6 +1,6 @@
 # `Meow`
 
- **A CLI tool for transferring USDC from Solana to other evm chains via Circle’s CCTP.**
+ **A CLI tool for transfering USDC from Solana to other evm chains via Circle’s CCTP.**
 
 
 ---
@@ -74,8 +74,9 @@ create the env as the example
 ---
 ## ⚠ Disclaimer
 
-[!CAUTION]
-This is a **personal project**, provided  without any guarantees. **Use at your own risk!** Always read the code before usage.
+> [!WARNING]  
+>This is a **personal project**, provided  without any guarantees. **Use at your own risk!** Always read the code before usage.
+
 
 ---
 
