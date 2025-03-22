@@ -1,12 +1,13 @@
-use anyhow::{Result, Context};
+use anyhow::{ Result, Context };
 use reqwest::Client;
 use serde_json::Value;
 use solana_sdk::signature::Signature;
 use std::time::Duration;
 use tokio::time::sleep;
 
-const IRIS_API_URL: &str = "https://iris-api-sandbox.circle.com";
-const SOLANA_SRC_DOMAIN_ID: u32 = 5;  
+const IRIS_API_SANDOX_URL: &str = "https://iris-api-sandbox.circle.com";
+const IRIS_API_URL: &str = "https://iris-api.circle.com/";
+const SOLANA_SRC_DOMAIN_ID: u32 = 5;
 
 #[derive(Debug)]
 pub struct AttestationData {
@@ -14,19 +15,21 @@ pub struct AttestationData {
     pub attestation: String,
 }
 
-
-pub async fn get_messages(tx_hash: &Signature) -> Result<AttestationData> {
+pub async fn get_messages(tx_hash: &Signature, mainnet: bool) -> Result<AttestationData> {
     let client = Client::new();
-    let url = format!("{}/messages/{}/{}", IRIS_API_URL, SOLANA_SRC_DOMAIN_ID, tx_hash);
+    let url = if mainnet {
+        format!("{}/messages/{}/{}", IRIS_API_URL, SOLANA_SRC_DOMAIN_ID, tx_hash)
+    } else {
+        format!("{}/messages/{}/{}", IRIS_API_SANDOX_URL, SOLANA_SRC_DOMAIN_ID, tx_hash)
+    };
 
     println!("🔍 Fetching messages for tx: {}", tx_hash);
 
-    for attempt in 1..=5 { 
-        
-        let response = client.get(&url).send().await
-            .context("Failed to send HTTP request")?;
+    for attempt in 1..=5 {
+        let response = client.get(&url).send().await.context("Failed to send HTTP request")?;
 
-        let attestation_response: Value = response.json().await
+        let attestation_response: Value = response
+            .json().await
             .context("Failed to parse JSON response")?;
 
         if let Some(error) = attestation_response.get("error") {
@@ -44,14 +47,13 @@ pub async fn get_messages(tx_hash: &Signature) -> Result<AttestationData> {
             if let Some(msg) = messages.get(0) {
                 if let Some(attestation) = msg.get("attestation") {
                     if attestation != "PENDING" {
-                        let message = msg.get("message")
+                        let message = msg
+                            .get("message")
                             .and_then(Value::as_str)
                             .unwrap_or("")
                             .to_string();
-                        
-                        let attestation_str = attestation.as_str()
-                            .unwrap_or("")
-                            .to_string();
+
+                        let attestation_str = attestation.as_str().unwrap_or("").to_string();
 
                         println!("✅ Attestation received!");
                         return Ok(AttestationData { message, attestation: attestation_str });
