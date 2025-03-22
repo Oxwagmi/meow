@@ -1,3 +1,3 @@
 pub mod app;
-pub mod solana;
 pub mod evm;
+pub mod solana;

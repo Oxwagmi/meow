@@ -17,7 +17,6 @@ pub const ARB_SEPOLIA_TESTNET_RPC_URL: &str = "https://arbitrum-sepolia-rpc.publ
 pub const OPTIMISM_SEPOLIA_TESTNET_RPC: &str = "https://sepolia.optimism.io/";
 pub const POLYGON_TESTNET_RPC: &str = "https://endpoints.omniatech.io/v1/matic/mumbai/public";
 
-
 // Mainnet Contract Addresses
 pub const ETHEREUM_MAINNET_CONTRACT: &str = "0xb2f38107a18f8599331677c14374fd3a952fb2c8";
 pub const AVALANCHE_MAINNET_CONTRACT: &str = "0x21f337db7a718f23e061262470af8c1fd01232d1";
@@ -27,7 +26,7 @@ pub const BASE_MAINNET_CONTRACT: &str = "0x827ae40E55C4355049ab91e441b6e269e4091
 pub const POLYGON_POS_MAINNET_CONTRACT: &str = "0x02d9fa3e7f870E5FAA7Ca6c112031E0ddC5E646C";
 pub const UNICHAIN_MAINNET_CONTRACT: &str = "0x395b1be6E432033B676e3e36B2c2121a1f952622";
 
-// Mainnet RPC URLs 
+// Mainnet RPC URLs
 pub const ETHEREUM_MAINNET_RPC_URL: &str = "https://ethereum-rpc.publicnode.com";
 pub const AVALANCHE_MAINNET_RPC_URL: &str = "https://api.avax.network/ext/bc/C/rpc";
 pub const OP_MAINNET_RPC_URL: &str = "https://mainnet.optimism.io/";
@@ -35,14 +34,6 @@ pub const ARBITRUM_MAINNET_RPC_URL: &str = "https://arb1.arbitrum.io/rpc";
 pub const BASE_MAINNET_RPC_URL: &str = "https://mainnet.base.org";
 pub const POLYGON_MAINNET_RPC_URL: &str = "https://polygon-rpc.com/";
 pub const UNICHAIN_MAINNET_RPC_URL: &str = "	https://mainnet.unichain.org";
-
-
-
-
-
-
-
-
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EVMDestinationDomain {
