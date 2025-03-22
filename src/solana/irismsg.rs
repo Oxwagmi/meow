@@ -1,4 +1,4 @@
-use anyhow::{ Result, Context };
+use anyhow::{Context, Result};
 use reqwest::Client;
 use serde_json::Value;
 use solana_sdk::signature::Signature;
@@ -18,24 +18,38 @@ pub struct AttestationData {
 pub async fn get_messages(tx_hash: &Signature, mainnet: bool) -> Result<AttestationData> {
     let client = Client::new();
     let url = if mainnet {
-        format!("{}/messages/{}/{}", IRIS_API_URL, SOLANA_SRC_DOMAIN_ID, tx_hash)
+        format!(
+            "{}/messages/{}/{}",
+            IRIS_API_URL, SOLANA_SRC_DOMAIN_ID, tx_hash
+        )
     } else {
-        format!("{}/messages/{}/{}", IRIS_API_SANDOX_URL, SOLANA_SRC_DOMAIN_ID, tx_hash)
+        format!(
+            "{}/messages/{}/{}",
+            IRIS_API_SANDOX_URL, SOLANA_SRC_DOMAIN_ID, tx_hash
+        )
     };
 
     println!("🔍 Fetching messages for tx: {}", tx_hash);
 
     for attempt in 1..=5 {
-        let response = client.get(&url).send().await.context("Failed to send HTTP request")?;
+        let response = client
+            .get(&url)
+            .send()
+            .await
+            .context("Failed to send HTTP request")?;
 
         let attestation_response: Value = response
-            .json().await
+            .json()
+            .await
             .context("Failed to parse JSON response")?;
 
         if let Some(error) = attestation_response.get("error") {
             let error_msg = error.as_str().unwrap_or_default();
             if error_msg.contains("Transaction hash not found") {
-                println!("⚠️ Transaction not indexed yet. Retrying {}/5 in 15s...", attempt);
+                println!(
+                    "⚠️ Transaction not indexed yet. Retrying {}/5 in 15s...",
+                    attempt
+                );
                 sleep(Duration::from_secs(15)).await;
                 continue;
             } else {
@@ -56,15 +70,23 @@ pub async fn get_messages(tx_hash: &Signature, mainnet: bool) -> Result<Attestat
                         let attestation_str = attestation.as_str().unwrap_or("").to_string();
 
                         println!("✅ Attestation received!");
-                        return Ok(AttestationData { message, attestation: attestation_str });
+                        return Ok(AttestationData {
+                            message,
+                            attestation: attestation_str,
+                        });
                     }
                 }
             }
         }
 
-        println!("⌛ Attestation is still pending... retrying {}/5 in 10s", attempt);
+        println!(
+            "⌛ Attestation is still pending... retrying {}/5 in 10s",
+            attempt
+        );
         sleep(Duration::from_secs(10)).await;
     }
 
-    Err(anyhow::anyhow!("❌ Attestation not received after multiple retries"))
+    Err(anyhow::anyhow!(
+        "❌ Attestation not received after multiple retries"
+    ))
 }

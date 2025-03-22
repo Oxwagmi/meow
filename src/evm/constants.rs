@@ -17,17 +17,16 @@ pub const ARB_SEPOLIA_TESTNET_RPC_URL: &str = "https://arbitrum-sepolia-rpc.publ
 pub const OPTIMISM_SEPOLIA_TESTNET_RPC: &str = "https://sepolia.optimism.io/";
 pub const POLYGON_TESTNET_RPC: &str = "https://endpoints.omniatech.io/v1/matic/mumbai/public";
 
-
 // Mainnet Contract Addresses
-pub const ETHEREUM_MAINNET_CONTRACT: &str = "0xb2f38107a18f8599331677c14374fd3a952fb2c8";
-pub const AVALANCHE_MAINNET_CONTRACT: &str = "0x21f337db7a718f23e061262470af8c1fd01232d1";
-pub const OP_MAINNET_CONTRACT: &str = "0xdb2831eaf163be1b564d437a97372deb0046c70d";
-pub const ARBITRUM_MAINNET_CONTRACT: &str = "0xe189bdcfbcecec917b937247666a44ed959d81e4";
-pub const BASE_MAINNET_CONTRACT: &str = "0x827ae40E55C4355049ab91e441b6e269e4091441";
-pub const POLYGON_POS_MAINNET_CONTRACT: &str = "0x02d9fa3e7f870E5FAA7Ca6c112031E0ddC5E646C";
-pub const UNICHAIN_MAINNET_CONTRACT: &str = "0x395b1be6E432033B676e3e36B2c2121a1f952622";
+pub const ETHEREUM_MAINNET_CONTRACT: &str = "0x0a992d191deec32afe36203ad87d7d289a738f81";
+pub const AVALANCHE_MAINNET_CONTRACT: &str = "0x8186359af5f57fbb40c6b14a588d2a59c0c29880";
+pub const OP_MAINNET_CONTRACT: &str = "0x4d41f22c5a0e5c74090899e5a8fb597a8842b3e8";
+pub const ARBITRUM_MAINNET_CONTRACT: &str = "0xC30362313FBBA5cf9163F0bb16a0e01f01A896ca";
+pub const BASE_MAINNET_CONTRACT: &str = "0xAD09780d193884d503182aD4588450C416D6F9D4";
+pub const POLYGON_POS_MAINNET_CONTRACT: &str = "0xF3be9355363857F3e001be68856A2f96b4C39Ba9";
+pub const UNICHAIN_MAINNET_CONTRACT: &str = "0x353bE9E2E38AB1D19104534e4edC21c643Df86f4";
 
-// Mainnet RPC URLs 
+// Mainnet RPC URLs
 pub const ETHEREUM_MAINNET_RPC_URL: &str = "https://ethereum-rpc.publicnode.com";
 pub const AVALANCHE_MAINNET_RPC_URL: &str = "https://api.avax.network/ext/bc/C/rpc";
 pub const OP_MAINNET_RPC_URL: &str = "https://mainnet.optimism.io/";
@@ -35,14 +34,6 @@ pub const ARBITRUM_MAINNET_RPC_URL: &str = "https://arb1.arbitrum.io/rpc";
 pub const BASE_MAINNET_RPC_URL: &str = "https://mainnet.base.org";
 pub const POLYGON_MAINNET_RPC_URL: &str = "https://polygon-rpc.com/";
 pub const UNICHAIN_MAINNET_RPC_URL: &str = "	https://mainnet.unichain.org";
-
-
-
-
-
-
-
-
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EVMDestinationDomain {

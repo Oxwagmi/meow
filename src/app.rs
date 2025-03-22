@@ -16,8 +16,8 @@ pub struct Args {}
 #[derive(Debug, Parser)]
 pub enum Command {
     Bridge {
-        #[arg(long,short,default_value = "false")]
-        mainnet: bool ,
+        #[arg(long, short, default_value = "false")]
+        mainnet: bool,
         #[arg(long)]
         to_chain: String,
         #[arg(long)]

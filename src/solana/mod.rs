@@ -1,4 +1,4 @@
 pub mod constants;
-pub mod programs;
 pub mod irismsg;
+pub mod programs;
 pub mod svm_manager;
