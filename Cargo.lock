@@ -2707,6 +2707,7 @@ dependencies = [
  "serde_json",
  "solana-client",
  "solana-sdk",
+ "spl-associated-token-account",
  "token-messenger-minter",
  "tokio",
  "web3",

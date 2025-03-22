@@ -37,7 +37,7 @@ async fn main() {
             let _ = manager.check_balance(0).await.unwrap();
 
             let deposit_for_burn_sig =
-                meow::solana::programs::call_deposit_for_burn(fixed_domain, &to, amount)
+                meow::solana::programs::call_deposit_for_burn(fixed_domain, &to, amount,mainnet)
                     .await
                     .unwrap();
             let attestation_data = get_messages(&deposit_for_burn_sig, mainnet).await.unwrap();
