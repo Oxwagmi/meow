@@ -58,6 +58,12 @@ create the env as the example
  ./target/release/meow bridge --to-chain base  --to 0x000destination_address  --amount 1                                                 
       // note: amount  1 = 0.000001 USDC  cuz USDC token program has 6 decimal points on solana chain             
 ```
+
+```sh
+ ./target/release/meow bridge --safe-format-usdc --to-chain base  --to 0x000destination_address  --amount 1 1                                                 
+// note: with the --safe-format-usdc command the --amount will be converted to correct decimal points and default max transfer to 100 USDC for safety. src/programs.rs line 144        
+```
+
 ```sh
  ./target/release/meow bridge --mainnnet  --to-chain base  --to 0x000destination_address  --amount 1                                                 
   // note:  default to testnet if u wanna use mainnet use -m or --mainnnet         
