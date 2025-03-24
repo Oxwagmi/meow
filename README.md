@@ -37,16 +37,21 @@ cargo build -r
 The compiled binary will be located in `target/release/meow`.
 
 **Recommended** creating a new solana and a evm wallet for testing , 
+<br/>
 
+Example :
 
 ```sh
 
  cast wallet vanity  --starts-with babe         
  solana-keygen grind --starts-with "Babe:1"  
+ solana airdrop 0.1  Babe_address
 
- ```
+```
 
-create the env as the example 
+- get some test usdc on solana  -> https://faucet.circle.com/
+- get some test native tokens on destination_chain  -> https://www.alchemy.com/faucets/
+- create the env as the example 
 
 ---
 

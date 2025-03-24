@@ -6,10 +6,12 @@ use solana_sdk::signer::Signer;
 use solana_sdk::signer::keypair::Keypair;
 use solana_sdk::system_program;
 // use solana_sdk::system_instruction;
-use solana_sdk::transaction::Transaction;
-use spl_associated_token_account::{get_associated_token_address, instruction::create_associated_token_account};
-use anyhow::{Result, anyhow};
 use super::svm_manager::{SOLANA_MANAGER, SolanaManager};
+use anyhow::{Result, anyhow};
+use solana_sdk::transaction::Transaction;
+use spl_associated_token_account::{
+    get_associated_token_address, instruction::create_associated_token_account,
+};
 use std::str::FromStr;
 use token_messenger_minter::accounts::DepositForBurnContext;
 use token_messenger_minter::instruction::DepositForBurn;
@@ -106,6 +108,7 @@ pub async fn call_deposit_for_burn(
     destination_domain: u32,
     mint_recipient_address: &str,
     amount_in_usdc: u64,
+
     mainnet:bool ,
     safe_format:bool
 ) -> Result<Signature> {
@@ -116,11 +119,11 @@ pub async fn call_deposit_for_burn(
     let client = manager.client();
     let usdc_address = if mainnet {
         Pubkey::from_str("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")?
-        
     } else {
         Pubkey::from_str("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU")?
     };
-    let user_token_account = ensure_token_account_exists(manager, &usdc_address, &spl_token_program).await?;
+    let user_token_account =
+        ensure_token_account_exists(manager, &usdc_address, &spl_token_program).await?;
     let ev_auth = Pubkey::from_str("CNfZLeeL4RUxwfPnjA3tLiQt4y43jp4V7bMpga673jf9")?;
 
     let message_transmitter = client.program(Pubkey::from_str(
@@ -138,10 +141,7 @@ pub async fn call_deposit_for_burn(
     )?;
 
     let message_sent_event_account_keypair = Keypair::new();
-
-
     const MAX_USDC_AMOUNT: u64 = 100;
-    const USDC_DECIMALS: u64 = 1_000_000;
 
     if amount_in_usdc == 0 {
         return Err(anyhow::anyhow!("Transfer amount must be greater than zero"));
@@ -225,36 +225,54 @@ pub fn evm_address_to_pubkey(address: &str) -> Pubkey {
     padded_bytes.extend(evm_bytes);
     Pubkey::new_from_array(padded_bytes.try_into().expect("Failed to create Pubkey"))
 }
-pub async fn ensure_token_account_exists(manager: &SolanaManager, mint: &Pubkey ,spl_token_program : &Pubkey) -> Result<Pubkey> {
-   
+pub async fn ensure_token_account_exists(
+    manager: &SolanaManager,
+    mint: &Pubkey,
+    spl_token_program: &Pubkey,
+) -> Result<Pubkey> {
     let associated_token_account = get_associated_token_address(&manager.payer.pubkey(), mint);
-    let account_exists = manager.rpc_client
-    .get_account(&associated_token_account)
-    .is_ok();
+    let account_exists = manager
+        .rpc_client
+        .get_account(&associated_token_account)
+        .is_ok();
 
     if !account_exists {
-        println!("⚠️ Token account does not exist, creating: {}", associated_token_account);
+        println!(
+            "⚠️ Token account does not exist, creating: {}",
+            associated_token_account
+        );
 
         let create_account_ix = create_associated_token_account(
             &manager.payer.pubkey(), // Funding payer
             &manager.payer.pubkey(), // Token account owner
-            mint,           
-            spl_token_program     
+            mint,
+            spl_token_program,
         );
 
         let transaction = Transaction::new_signed_with_payer(
             &[create_account_ix],
             Some(&manager.payer.pubkey()),
             &[manager.payer.as_ref()],
-            manager.rpc_client.get_latest_blockhash().expect("Failed to get recent blockhash"),
+            manager
+                .rpc_client
+                .get_latest_blockhash()
+                .expect("Failed to get recent blockhash"),
         );
 
-        manager.rpc_client.send_and_confirm_transaction(&transaction)
+        manager
+            .rpc_client
+            .send_and_confirm_transaction(&transaction)
             .map_err(|e| anyhow!("Failed to create associated token account: {}", e))?;
 
-        println!("✅ Token account created successfully: {}", associated_token_account);
+        println!(
+            "✅ Token account created successfully: {}",
+            associated_token_account
+        );
     } else {
-        println!("✅ Token account already exists: {}", associated_token_account);
+        println!(
+            "✅ Token account already exists: {}",
+            associated_token_account
+        );
     }
 
     Ok(associated_token_account)
