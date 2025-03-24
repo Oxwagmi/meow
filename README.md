@@ -60,7 +60,7 @@ create the env as the example
 ```
 
 ```sh
- ./target/release/meow bridge --safe-format-usdc --to-chain base  --to 0x000destination_address  --amount 1 1                                                 
+ ./target/release/meow bridge --safe-format-usdc --to-chain base  --to 0x000destination_address  --amount 1                                               
 // note: with the --safe-format-usdc command the --amount will be converted to correct decimal points and default max transfer to 100 USDC for safety. src/programs.rs line 144        
 ```
 
