@@ -18,6 +18,8 @@ pub enum Command {
     Bridge {
         #[arg(long, short, default_value = "false")]
         mainnet: bool,
+        #[arg(long, default_value = "false")]
+        safe_format_usdc: bool,
         #[arg(long)]
         to_chain: String,
         #[arg(long)]

@@ -108,7 +108,9 @@ pub async fn call_deposit_for_burn(
     destination_domain: u32,
     mint_recipient_address: &str,
     amount_in_usdc: u64,
-    mainnet: bool,
+
+    mainnet:bool ,
+    safe_format:bool
 ) -> Result<Signature> {
     let manager: &SolanaManager = SOLANA_MANAGER.get().unwrap();
     let spl_token_program = Pubkey::from_str("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")?;
@@ -139,19 +141,17 @@ pub async fn call_deposit_for_burn(
     )?;
 
     let message_sent_event_account_keypair = Keypair::new();
-
-    // const MAX_USDC_AMOUNT: u64 = 100;
-    // const USDC_DECIMALS: u64 = 1_000_000;
+    const MAX_USDC_AMOUNT: u64 = 100;
 
     if amount_in_usdc == 0 {
         return Err(anyhow::anyhow!("Transfer amount must be greater than zero"));
     }
-    // if amount_in_usdc > MAX_USDC_AMOUNT {
-    //     return Err(anyhow::anyhow!("Transfer amount exceeds the 100 USDC limit for safety"));
-    // }
-    // let amount = amount_in_usdc
-    // .checked_mul(USDC_DECIMALS)
-    // .ok_or_else(|| anyhow!("Amount overflow during conversion"))?;
+    if safe_format &&  amount_in_usdc > MAX_USDC_AMOUNT {
+        return Err(anyhow::anyhow!("Transfer amount exceeds the 100 USDC limit for safety"));
+    }
+    let amount_formated = amount_in_usdc
+    .checked_mul(USDC_DECIMALS)
+    .ok_or_else(|| anyhow!("Amount overflow during conversion"))?;
 
     println!(
         "  message_transmitter_account: {}",
@@ -203,7 +203,7 @@ pub async fn call_deposit_for_burn(
         })
         .args(DepositForBurn {
             params: DepositForBurnParams {
-                amount: amount_in_usdc, // 1 = 0.000001 USDC
+                amount:  if safe_format { amount_formated } else { amount_in_usdc }, // 1 = 0.000001 USDC
                 destination_domain: destination_domain,
                 mint_recipient,
             },
