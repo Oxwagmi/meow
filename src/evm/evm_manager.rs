@@ -4,6 +4,7 @@ use web3::{
     signing::SecretKey,
     types::{Address, H160},
 };
+use super::constants::{ AVALANCE_FUJI_TESTNET_RPC_URL, AVALANCHE_FUJI_CONTRACT, AVALANCHE_MAINNET_CONTRACT, AVALANCHE_MAINNET_RPC_URL};
 // use web3::types::TransactionParameters;
 // use web3::ethabi::Token;
 use super::{
@@ -44,6 +45,13 @@ impl EvmManager {
                     (ETHEREUM_MAINNET_RPC_URL, ETHEREUM_MAINNET_CONTRACT)
                 } else {
                     (ETHEREUM_SEPOLIA_TESTNET_RPC_URL, ETHEREUM_SEPOLIA_CONTRACT)
+                }
+            }
+            EVMDestinationDomain::Avalanche => {
+                if mainnet {
+                    (AVALANCHE_MAINNET_RPC_URL, AVALANCHE_MAINNET_CONTRACT)
+                } else {
+                    (AVALANCE_FUJI_TESTNET_RPC_URL, AVALANCHE_FUJI_CONTRACT)
                 }
             }
             EVMDestinationDomain::Optimism => {

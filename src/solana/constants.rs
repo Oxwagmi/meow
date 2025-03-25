@@ -1,7 +1,7 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DestinationDomain {
     Ethereum = 0,
-    // Avalanche = 1,
+    Avalanche = 1,
     Optimism = 2,
     Arbitrum = 3,
     // Noble = 4,
@@ -16,10 +16,10 @@ pub enum DestinationDomain {
 impl DestinationDomain {
     pub fn from_str(s: &str) -> Option<Self> {
         match s.to_lowercase().as_str() {
-            "ethereum" => Some(Self::Ethereum),
-            // "avalanche" => Some(Self::Avalanche),
+            "ethereum" | "eth" => Some(Self::Ethereum),
+            "avalanche" => Some(Self::Avalanche),
             "optimism" => Some(Self::Optimism),
-            "arbitrum" => Some(Self::Arbitrum),
+            "arbitrum"| "arb" => Some(Self::Arbitrum),
             // "noble" => Some(Self::Noble),
             // "solana" => Some(Self::Solana),
             "base" => Some(Self::Base),

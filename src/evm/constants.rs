@@ -16,6 +16,7 @@ pub const ETHEREUM_SEPOLIA_TESTNET_RPC_URL: &str = "https://sepolia-rpc.publicno
 pub const ARB_SEPOLIA_TESTNET_RPC_URL: &str = "https://arbitrum-sepolia-rpc.publicnode.com";
 pub const OPTIMISM_SEPOLIA_TESTNET_RPC: &str = "https://sepolia.optimism.io/";
 pub const POLYGON_TESTNET_RPC: &str = "https://endpoints.omniatech.io/v1/matic/mumbai/public";
+pub const AVALANCE_FUJI_TESTNET_RPC_URL: &str = "https://avalanche-fuji-c-chain-rpc.publicnode.com";
 
 // Mainnet Contract Addresses
 pub const ETHEREUM_MAINNET_CONTRACT: &str = "0x0a992d191deec32afe36203ad87d7d289a738f81";
@@ -38,7 +39,7 @@ pub const UNICHAIN_MAINNET_RPC_URL: &str = "	https://mainnet.unichain.org";
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EVMDestinationDomain {
     Ethereum = 0,
-    // Avalanche = 1,
+    Avalanche = 1,
     Optimism = 2,
     Arbitrum = 3,
     Base = 6,
@@ -50,7 +51,7 @@ impl EVMDestinationDomain {
     pub fn from_u32(value: u32) -> Option<Self> {
         match value {
             0 => Some(Self::Ethereum),
-            // 1 => Some(Self::Avalanche),
+            1 => Some(Self::Avalanche),
             2 => Some(Self::Optimism),
             3 => Some(Self::Arbitrum),
             6 => Some(Self::Base),
