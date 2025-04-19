@@ -35,7 +35,7 @@ async fn main() {
             println!("CHECKING BALANCES OF BOTH SIDES BEFORE SENDING....");
             destination_balance_check(fixed_domain, mainnet).await;
             let manager: &SolanaManager = SOLANA_MANAGER.get().unwrap();
-            let _ = manager.check_balance(0).await.unwrap();
+            let _ = manager.check_balance(1000).await.unwrap();
 
             let deposit_for_burn_sig = meow::solana::programs::call_deposit_for_burn(
                 fixed_domain,

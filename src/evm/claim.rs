@@ -56,7 +56,7 @@ pub async fn evm_claim(
         .send_raw_transaction(signed_tx.raw_transaction)
         .await?;
 
-    println!("✅ Transaction sent: {:?}", tx_hash);
+    println!("✅ Destination chain txn sent: {:?}", tx_hash);
 
     Ok(tx_hash)
 }
@@ -67,7 +67,9 @@ pub async fn destination_balance_check(domain: u32, mainnet: bool) {
     let web3 = evm_manager.web3;
     let balance = web3.eth().balance(wallet_address, None).await.unwrap();
     println!("Destination chain fee payer balance: {} in WEI ", balance);
-    if balance == U256::zero() {
+    // if balance is 1 wei still not enough to pay for gas
+    // if balance == U256::zero() {
+    if balance < U256::from(1_000_000_000) {
         panic!("Insufficient balance on destination  chain fee payer");
     }
 }
