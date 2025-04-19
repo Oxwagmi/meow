@@ -18,7 +18,7 @@ async fn main() {
     let app = App::parse();
 
     match app.command {
-        Command::Bridge {
+        Command::BridgeSolanaUSDC {
             mainnet,
             safe_format_usdc,
             amount,
