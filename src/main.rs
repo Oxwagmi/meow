@@ -56,5 +56,14 @@ async fn main() {
             .await
             .unwrap();
         }
+        Command::BridgeEvmUSDC {
+            mainnet,
+            safe_format_usdc,
+            amount,
+            from_chain,
+            to,
+        } => {
+            println!("Bridging from EVM to Solana..");
+        }
     }
 }

@@ -27,4 +27,16 @@ pub enum Command {
         #[arg(long)]
         amount: u64,
     },
+    BridgeEvmUSDC {
+        #[arg(long, short, default_value = "false")]
+        mainnet: bool,
+        #[arg(long, default_value = "false")]
+        safe_format_usdc: bool,
+        #[arg(long)]
+        from_chain: String,
+        #[arg(long)]
+        to: String,
+        #[arg(long)]
+        amount: u64,
+    },
 }
