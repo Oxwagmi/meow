@@ -39,7 +39,7 @@ pub async fn evm_claim(
 
     let tx_params = TransactionParameters {
         nonce: Some(nonce),
-        to: Some(evm.contract_address),
+        to: Some(evm.message_transmitter_contract_address),
         value: U256::zero(),
         gas_price: Some(gas_price),
         gas: gas_limit,
