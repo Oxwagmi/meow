@@ -1,0 +1,32 @@
+[
+    {
+      "name": "depositForBurn",
+      "type": "function",
+      "stateMutability": "nonpayable",
+      "inputs": [
+        {
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "name": "destinationDomain",
+          "type": "uint32"
+        },
+        {
+          "name": "mintRecipient",
+          "type": "bytes32"
+        },
+        {
+          "name": "burnToken",
+          "type": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "_nonce",
+          "type": "uint64"
+        }
+      ]
+    }
+  ]
+  
