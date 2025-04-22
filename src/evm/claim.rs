@@ -61,12 +61,12 @@ pub async fn evm_claim(
     Ok(tx_hash)
 }
 
-pub async fn destination_balance_check(domain: u32, mainnet: bool) {
+pub async fn evm_balance_check(domain: u32, mainnet: bool) {
     let evm_manager = EvmManager::init(domain, mainnet).unwrap();
     let wallet_address = evm_manager.wallet_address;
     let web3 = evm_manager.web3;
     let balance = web3.eth().balance(wallet_address, None).await.unwrap();
-    println!("Destination chain fee payer balance: {} in WEI ", balance);
+    println!("Evm fee payer balance: {} in WEI ", balance);
     // if balance is 1 wei still not enough to pay for gas
     // if balance == U256::zero() {
     if balance < U256::from(1_000_000_000) {

@@ -4,10 +4,11 @@ use serde_json::Value;
 use solana_sdk::signature::Signature;
 use std::time::Duration;
 use tokio::time::sleep;
+use web3::types::H256;
 
 const IRIS_API_SANDOX_URL: &str = "https://iris-api-sandbox.circle.com";
 const IRIS_API_URL: &str = "https://iris-api.circle.com/";
-const SOLANA_SRC_DOMAIN_ID: u32 = 5;
+// const SOLANA_SRC_DOMAIN_ID: u32 = 5;
 
 #[derive(Debug)]
 pub struct AttestationData {
@@ -15,21 +16,35 @@ pub struct AttestationData {
     pub attestation: String,
 }
 
-pub async fn get_messages(tx_hash: &Signature, mainnet: bool) -> Result<AttestationData> {
+#[derive(Debug)]
+pub enum TxHash {
+    Solana(Signature),
+    Ethereum(H256),
+}
+
+pub async fn get_messages(
+    tx_hash: &TxHash,
+    mainnet: bool,
+    domain: u32,
+    retry_interval_secs: u64,
+) -> Result<AttestationData> {
     let client = Client::new();
+
+    let tx_hash_str = match tx_hash {
+        TxHash::Solana(sig) => sig.to_string(),
+        TxHash::Ethereum(h) => format!("{:#x}", h),
+    };
+
     let url = if mainnet {
-        format!(
-            "{}/messages/{}/{}",
-            IRIS_API_URL, SOLANA_SRC_DOMAIN_ID, tx_hash
-        )
+        format!("{}/messages/{}/{}", IRIS_API_URL, domain, tx_hash_str)
     } else {
         format!(
             "{}/messages/{}/{}",
-            IRIS_API_SANDOX_URL, SOLANA_SRC_DOMAIN_ID, tx_hash
+            IRIS_API_SANDOX_URL, domain, tx_hash_str
         )
     };
 
-    println!("🔍 Fetching messages for tx: {}", tx_hash);
+    println!("🔍 Fetching messages for tx: {}", tx_hash_str);
 
     for attempt in 1..=5 {
         let response = client
@@ -80,10 +95,10 @@ pub async fn get_messages(tx_hash: &Signature, mainnet: bool) -> Result<Attestat
         }
 
         println!(
-            "⌛ Attestation is still pending... retrying {}/5 in 10s",
-            attempt
+            "⌛ Attestation is still pending... retrying {}/5 in {}s",
+            attempt, retry_interval_secs
         );
-        sleep(Duration::from_secs(10)).await;
+        sleep(Duration::from_secs(retry_interval_secs)).await;
     }
 
     Err(anyhow::anyhow!(

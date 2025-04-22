@@ -1,10 +1,22 @@
+use super::constants::{
+    ARBITRUM_MAINNET_TOKEN_MESSENGER, ARBITRUM_MAINNET_USDC, ARBITRUM_SEPOLIA_TOKEN_MESSENGER,
+    ARBITRUM_SEPOLIA_USDC, AVALANCE_FUJI_TESTNET_RPC_URL, AVALANCHE_FUJI_CONTRACT,
+    AVALANCHE_FUJI_TOKEN_MESSENGER, AVALANCHE_FUJI_USDC, AVALANCHE_MAINNET_CONTRACT,
+    AVALANCHE_MAINNET_RPC_URL, AVALANCHE_MAINNET_TOKEN_MESSENGER, AVALANCHE_MAINNET_USDC,
+    BASE_MAINNET_TOKEN_MESSENGER, BASE_MAINNET_USDC, BASE_SEPOLIA_TOKEN_MESSENGER,
+    BASE_SEPOLIA_USDC, ETHEREUM_MAINNET_TOKEN_MESSENGER, ETHEREUM_MAINNET_USDC,
+    ETHEREUM_SEPOLIA_TOKEN_MESSENGER, OP_MAINNET_USDC, OP_SEPOLIA_USDC,
+    OPTIMISM_MAINNET_TOKEN_MESSENGER, OPTIMISM_SEPOLIA_TOKEN_MESSENGER,
+    POLYGON_AMOY_TOKEN_MESSENGER, POLYGON_AMOY_USDC, POLYGON_MAINNET_TOKEN_MESSENGER,
+    POLYGON_POS_USDC, UNICHAIN_MAINNET_TOKEN_MESSENGER, UNICHAIN_MAINNET_USDC,
+    UNICHAIN_SEPOLIA_TOKEN_MESSENGER, UNICHAIN_SEPOLIA_USDC,
+};
 use web3::transports::Http;
 use web3::{
     contract::Contract,
     signing::SecretKey,
     types::{Address, H160},
 };
-use super::constants::{ ARBITRUM_MAINNET_TOKEN_MESSENGER, ARBITRUM_SEPOLIA_TOKEN_MESSENGER, AVALANCE_FUJI_TESTNET_RPC_URL, AVALANCHE_FUJI_CONTRACT, AVALANCHE_FUJI_TOKEN_MESSENGER, AVALANCHE_MAINNET_CONTRACT, AVALANCHE_MAINNET_RPC_URL, AVALANCHE_MAINNET_TOKEN_MESSENGER, BASE_MAINNET_TOKEN_MESSENGER, BASE_SEPOLIA_TOKEN_MESSENGER, ETHEREUM_MAINNET_TOKEN_MESSENGER, ETHEREUM_SEPOLIA_TOKEN_MESSENGER, OPTIMISM_MAINNET_TOKEN_MESSENGER, OPTIMISM_SEPOLIA_TOKEN_MESSENGER, POLYGON_AMOY_TOKEN_MESSENGER, POLYGON_MAINNET_TOKEN_MESSENGER, UNICHAIN_MAINNET_TOKEN_MESSENGER, UNICHAIN_SEPOLIA_TOKEN_MESSENGER};
 // use web3::types::TransactionParameters;
 // use web3::ethabi::Token;
 use super::{
@@ -32,8 +44,10 @@ pub struct EvmManager {
     pub web3: Web3<Http>,
     pub message_transmitter_contract: Contract<Http>,
     pub token_messenger_contract: Contract<Http>,
+    pub usdc_contract: Contract<Http>,
     pub message_transmitter_contract_address: H160,
-    pub token_messenger_contract_address: H160, 
+    pub token_messenger_contract_address: H160,
+    pub usdc_contract_address: H160,
 }
 
 impl EvmManager {
@@ -41,54 +55,129 @@ impl EvmManager {
         let destination = EVMDestinationDomain::from_u32(domain)
             .ok_or_else(|| anyhow!("Invalid domain: {}", domain))?;
 
-        let (rpc_url, message_transmitter_contract_address,token_messenger_contract_address) = match destination {
+        let (
+            rpc_url,
+            message_transmitter_contract_address,
+            token_messenger_contract_address,
+            usdc_contract_address,
+        ) = match destination {
             EVMDestinationDomain::Ethereum => {
                 if mainnet {
-                    (ETHEREUM_MAINNET_RPC_URL, ETHEREUM_MAINNET_CONTRACT ,ETHEREUM_MAINNET_TOKEN_MESSENGER)
+                    (
+                        ETHEREUM_MAINNET_RPC_URL,
+                        ETHEREUM_MAINNET_CONTRACT,
+                        ETHEREUM_MAINNET_TOKEN_MESSENGER,
+                        ETHEREUM_MAINNET_USDC,
+                    )
                 } else {
-                    (ETHEREUM_SEPOLIA_TESTNET_RPC_URL, ETHEREUM_SEPOLIA_CONTRACT,ETHEREUM_SEPOLIA_TOKEN_MESSENGER)
+                    (
+                        ETHEREUM_SEPOLIA_TESTNET_RPC_URL,
+                        ETHEREUM_SEPOLIA_CONTRACT,
+                        ETHEREUM_SEPOLIA_TOKEN_MESSENGER,
+                        ETHEREUM_SEPOLIA_CONTRACT,
+                    )
                 }
             }
             EVMDestinationDomain::Avalanche => {
                 if mainnet {
-                    (AVALANCHE_MAINNET_RPC_URL, AVALANCHE_MAINNET_CONTRACT , AVALANCHE_MAINNET_TOKEN_MESSENGER)
+                    (
+                        AVALANCHE_MAINNET_RPC_URL,
+                        AVALANCHE_MAINNET_CONTRACT,
+                        AVALANCHE_MAINNET_TOKEN_MESSENGER,
+                        AVALANCHE_MAINNET_USDC,
+                    )
                 } else {
-                    (AVALANCE_FUJI_TESTNET_RPC_URL, AVALANCHE_FUJI_CONTRACT,AVALANCHE_FUJI_TOKEN_MESSENGER)
+                    (
+                        AVALANCE_FUJI_TESTNET_RPC_URL,
+                        AVALANCHE_FUJI_CONTRACT,
+                        AVALANCHE_FUJI_TOKEN_MESSENGER,
+                        AVALANCHE_FUJI_USDC,
+                    )
                 }
             }
             EVMDestinationDomain::Optimism => {
                 if mainnet {
-                    (OP_MAINNET_RPC_URL, OP_MAINNET_CONTRACT,OPTIMISM_MAINNET_TOKEN_MESSENGER)
+                    (
+                        OP_MAINNET_RPC_URL,
+                        OP_MAINNET_CONTRACT,
+                        OPTIMISM_MAINNET_TOKEN_MESSENGER,
+                        OP_MAINNET_USDC,
+                    )
                 } else {
-                    (OPTIMISM_SEPOLIA_TESTNET_RPC, OP_SEPOLIA_CONTRACT,OPTIMISM_SEPOLIA_TOKEN_MESSENGER)
+                    (
+                        OPTIMISM_SEPOLIA_TESTNET_RPC,
+                        OP_SEPOLIA_CONTRACT,
+                        OPTIMISM_SEPOLIA_TOKEN_MESSENGER,
+                        OP_SEPOLIA_USDC,
+                    )
                 }
             }
             EVMDestinationDomain::Arbitrum => {
                 if mainnet {
-                    (ARBITRUM_MAINNET_RPC_URL, ARBITRUM_MAINNET_CONTRACT,ARBITRUM_MAINNET_TOKEN_MESSENGER)
+                    (
+                        ARBITRUM_MAINNET_RPC_URL,
+                        ARBITRUM_MAINNET_CONTRACT,
+                        ARBITRUM_MAINNET_TOKEN_MESSENGER,
+                        ARBITRUM_MAINNET_USDC,
+                    )
                 } else {
-                    (ARB_SEPOLIA_TESTNET_RPC_URL, ARBITRUM_SEPOLIA_CONTRACT,ARBITRUM_SEPOLIA_TOKEN_MESSENGER)
+                    (
+                        ARB_SEPOLIA_TESTNET_RPC_URL,
+                        ARBITRUM_SEPOLIA_CONTRACT,
+                        ARBITRUM_SEPOLIA_TOKEN_MESSENGER,
+                        ARBITRUM_SEPOLIA_USDC,
+                    )
                 }
             }
             EVMDestinationDomain::Base => {
                 if mainnet {
-                    (BASE_MAINNET_RPC_URL, BASE_MAINNET_CONTRACT,BASE_MAINNET_TOKEN_MESSENGER)
+                    (
+                        BASE_MAINNET_RPC_URL,
+                        BASE_MAINNET_CONTRACT,
+                        BASE_MAINNET_TOKEN_MESSENGER,
+                        BASE_MAINNET_USDC,
+                    )
                 } else {
-                    (BASE_TESTNET_RPC_URL, BASE_SEPOLIA_CONTRACT,BASE_SEPOLIA_TOKEN_MESSENGER)
+                    (
+                        BASE_TESTNET_RPC_URL,
+                        BASE_SEPOLIA_CONTRACT,
+                        BASE_SEPOLIA_TOKEN_MESSENGER,
+                        BASE_SEPOLIA_USDC,
+                    )
                 }
             }
             EVMDestinationDomain::PolygonPos => {
                 if mainnet {
-                    (POLYGON_MAINNET_RPC_URL, POLYGON_POS_MAINNET_CONTRACT,POLYGON_MAINNET_TOKEN_MESSENGER)
+                    (
+                        POLYGON_MAINNET_RPC_URL,
+                        POLYGON_POS_MAINNET_CONTRACT,
+                        POLYGON_MAINNET_TOKEN_MESSENGER,
+                        POLYGON_POS_USDC,
+                    )
                 } else {
-                    (POLYGON_TESTNET_RPC, POLYGON_POS_AMOY_CONTRACT,POLYGON_AMOY_TOKEN_MESSENGER)
+                    (
+                        POLYGON_TESTNET_RPC,
+                        POLYGON_POS_AMOY_CONTRACT,
+                        POLYGON_AMOY_TOKEN_MESSENGER,
+                        POLYGON_AMOY_USDC,
+                    )
                 }
             }
             EVMDestinationDomain::Unichain => {
                 if mainnet {
-                    (UNICHAIN_MAINNET_RPC_URL, UNICHAIN_MAINNET_CONTRACT,UNICHAIN_MAINNET_TOKEN_MESSENGER)
+                    (
+                        UNICHAIN_MAINNET_RPC_URL,
+                        UNICHAIN_MAINNET_CONTRACT,
+                        UNICHAIN_MAINNET_TOKEN_MESSENGER,
+                        UNICHAIN_MAINNET_USDC,
+                    )
                 } else {
-                    (UNICHAIN_TESTNET_RPC_URL, UNICHAIN_CONTRACT_ADDRESS,UNICHAIN_SEPOLIA_TOKEN_MESSENGER)
+                    (
+                        UNICHAIN_TESTNET_RPC_URL,
+                        UNICHAIN_CONTRACT_ADDRESS,
+                        UNICHAIN_SEPOLIA_TOKEN_MESSENGER,
+                        UNICHAIN_SEPOLIA_USDC,
+                    )
                 }
             }
         };
@@ -102,8 +191,16 @@ impl EvmManager {
         let web3 = Web3::new(http);
 
         let wallet_address = Address::from_slice(&wallet_address);
-        let message_transmitter_contract_address = message_transmitter_contract_address.parse::<Address>().unwrap();
-        let token_messenger_contract_address = token_messenger_contract_address.parse::<Address>().unwrap();
+        let message_transmitter_contract_address = message_transmitter_contract_address
+            .parse::<Address>()
+            .unwrap();
+        let token_messenger_contract_address =
+            token_messenger_contract_address.parse::<Address>().unwrap();
+
+        //justhardcoded the usdc contract address for now
+        // let usdc_contract_address = "0x31d0220469e10c4E71834a79b1f276d740d3768F".parse::<Address>().unwrap();
+        let usdc_contract_address = usdc_contract_address.parse::<Address>().unwrap();
+
         let contract = Contract::from_json(
             web3.eth(),
             message_transmitter_contract_address,
@@ -113,6 +210,11 @@ impl EvmManager {
             web3.eth(),
             token_messenger_contract_address,
             include_bytes!("../evm/TokenMessenger.json"),
+        )?;
+        let usdc_contract = Contract::from_json(
+            web3.eth(),
+            usdc_contract_address,
+            include_bytes!("../evm/Usdc.json"),
         )?;
 
         let private_key =
@@ -124,9 +226,11 @@ impl EvmManager {
             wallet,
             web3,
             message_transmitter_contract: contract,
-            token_messenger_contract :token_messenger_contract,
+            token_messenger_contract: token_messenger_contract,
+            usdc_contract,
             message_transmitter_contract_address,
-            token_messenger_contract_address
+            token_messenger_contract_address,
+            usdc_contract_address,
         })
     }
 }

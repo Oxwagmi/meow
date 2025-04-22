@@ -1,12 +1,17 @@
 use anyhow::anyhow;
 use clap::Parser;
 use meow::app::{App, Command};
-use meow::evm::claim::destination_balance_check;
+use meow::evm::claim::evm_balance_check;
 use meow::evm::claim::evm_claim;
+use meow::evm::deposit_for_burn::evm_deposit;
 use meow::solana::constants::DestinationDomain;
+use meow::solana::irismsg::TxHash;
 use meow::solana::irismsg::get_messages;
+use meow::solana::programs::call_recieve_message;
 use meow::solana::svm_manager::{SOLANA_MANAGER, SolanaManager, init_solana_manager};
-
+use solana_sdk::signature::Signature;
+use web3::types::H256;
+// use web3::types::H256;
 // #[tokio::main(flavor = "multi_thread")]
 #[tokio::main]
 async fn main() {
@@ -33,7 +38,7 @@ async fn main() {
 
             init_solana_manager(mainnet).unwrap();
             println!("CHECKING BALANCES OF BOTH SIDES BEFORE SENDING....");
-            destination_balance_check(fixed_domain, mainnet).await;
+            evm_balance_check(fixed_domain, mainnet).await;
             let manager: &SolanaManager = SOLANA_MANAGER.get().unwrap();
             let _ = manager.check_balance(1000).await.unwrap();
 
@@ -46,7 +51,10 @@ async fn main() {
             )
             .await
             .unwrap();
-            let attestation_data = get_messages(&deposit_for_burn_sig, mainnet).await.unwrap();
+            let deposit_for_burn_sig = TxHash::Solana(deposit_for_burn_sig);
+            let attestation_data = get_messages(&deposit_for_burn_sig, mainnet, 5, 10)
+                .await
+                .unwrap();
             evm_claim(
                 &attestation_data.message,
                 &attestation_data.attestation,
@@ -58,12 +66,104 @@ async fn main() {
         }
         Command::BridgeEvmUSDC {
             mainnet,
-            safe_format_usdc,
+            // safe_format_usdc,
             amount,
             from_chain,
-            to,
+            // to,
+            retry_secs
         } => {
             println!("Bridging from EVM to Solana..");
+            init_solana_manager(mainnet).unwrap();
+            let domain = DestinationDomain::from_str(&from_chain)
+                .ok_or_else(|| anyhow!("Invalid chain: {}", from_chain))
+                .unwrap();
+
+            let fixed_domain = domain.as_u32();
+            println!("CHECKING BALANCES OF BOTH SIDES BEFORE SENDING....");
+            evm_balance_check(fixed_domain, mainnet).await;
+            let manager: &SolanaManager = SOLANA_MANAGER.get().unwrap();
+            let _ = manager.check_balance(1000).await.unwrap();
+            //////////////////////////////////////////////////////////////////
+            
+            let (sig, remote_usdc) = evm_deposit(fixed_domain, mainnet, amount).await.unwrap();
+            let tx_hash = TxHash::Ethereum(sig);
+            println!("Attempting to get attestation_data for tx: {:?}", sig);
+            let attestation_data = get_messages(&tx_hash, mainnet, fixed_domain, retry_secs)
+                .await
+                .unwrap(); 
+            println!("Attestation data: {:?}", attestation_data);
+            call_recieve_message(
+                remote_usdc.to_string().as_str(),
+                &attestation_data.message,
+                &attestation_data.attestation,
+                fixed_domain,
+                mainnet,
+            )
+            .await
+            .unwrap();
+        }
+
+        Command::MannualRedeemUsdc {
+            mainnet,
+            txn_hash,
+            remote_domain,
+            remote_usdc,
+            retry_secs,
+        } => {
+            println!("Starting manual redeem USDC");
+
+            let tx_hash = if is_solana_tx(&txn_hash) {
+                TxHash::Solana(
+                    txn_hash
+                        .parse::<Signature>()
+                        .expect("Invalid Solana Signature"),
+                )
+            } else {
+                println!("🔍 Detected EVM transaction hash");
+                TxHash::Ethereum(txn_hash.parse::<H256>().expect(" Invalid Ethereum tx hash"))
+            };
+
+            println!("⏳ Fetching attestation data for {:?}", tx_hash);
+            let attestation_data =
+                get_messages(&tx_hash, mainnet, remote_domain, retry_secs)
+                    .await
+                    .expect(" Failed to fetch attestation data");
+            println!("Attestation data received!");
+
+            match tx_hash {
+                TxHash::Solana(_) => {
+                    println!("claiming on eth from solana usdc deposits...");
+                    evm_claim(
+                        &attestation_data.message,
+                        &attestation_data.attestation,
+                        remote_domain,
+                        mainnet,
+                    )
+                    .await
+                    .expect("Failed to claim on EVM");
+                }
+
+                TxHash::Ethereum(_) => {
+                    println!("claiming on  Solana  EVM usdc deposit...");
+                    if remote_usdc.is_empty() {
+                        panic!(" Remote USDC address from evm chains is required to claim usdc on solana chain  ");
+                    }
+                    call_recieve_message(
+                        &remote_usdc.to_string().as_str(),
+                        &attestation_data.message,
+                        &attestation_data.attestation,
+                        remote_domain,
+                        mainnet,
+                    )
+                    .await
+                    .expect(" Failed to call receiveMessage on Solana");
+                }
+            }
+
+            println!("USDC manually redeemed successfully!");
         }
     }
+}
+fn is_solana_tx(tx: &str) -> bool {
+    !tx.starts_with("0x") && tx.len() >= 43 && tx.len() <= 88
 }

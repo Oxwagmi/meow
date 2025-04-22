@@ -19,7 +19,7 @@ impl DestinationDomain {
             "ethereum" | "eth" => Some(Self::Ethereum),
             "avalanche" => Some(Self::Avalanche),
             "optimism" => Some(Self::Optimism),
-            "arbitrum"| "arb" => Some(Self::Arbitrum),
+            "arbitrum" | "arb" => Some(Self::Arbitrum),
             // "noble" => Some(Self::Noble),
             // "solana" => Some(Self::Solana),
             "base" => Some(Self::Base),
