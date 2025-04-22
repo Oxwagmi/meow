@@ -59,6 +59,18 @@ Example :
 ## Usage
 
 
+```js
+Usage: meow <COMMAND>
+
+Commands:
+  bridge-solana-usdc   
+  bridge-evm-usdc      
+  mannual-redeem-usdc  
+  help                 Print this message or the help of the given subcommand(s)
+
+```
+###### Solana => Evm
+
 ```sh
  ./target/release/meow bridge-solana-usdc --to-chain base  --to 0x000destination_address  --amount 1                                                 
       // note: amount  1 = 0.000001 USDC  cuz USDC token program has 6 decimal points on solana chain             
@@ -70,9 +82,26 @@ Example :
 ```
 
 ```sh
- ./target/release/meow bridge-solana-usdc --mainnnet  --to-chain base  --to 0x000destination_address  --amount 1                                                 
+ ./target/release/meow bridge-solana-usdc --mainnnet  --to-chain base  --to 0x000destination_address --amount 1                                                 
   // note:  default to testnet if u wanna use mainnet use -m or --mainnnet         
 ```
+```sh
+./target/release/meow mannual-redeem-usdc --txn-hash 0xevm_txn_hash --remote-domain 10 --retry-secs 100 --remote-usdc 0x31d0220469e10c4E71834a79b1f276d740d3768F
+
+// eg: for unichain remote-domain is 10 in unichain testnet usdc address is 0x3.. 
+
+```
+
+######   Evm => Solana
+
+```sh
+ ./target/release/meow bridge-evm-usdc  --from-chain unichain   --amount 1  --retry-secs 300   
+   
+   // amount 1 means 1/10**6 usdc  
+  // note:  default to testnet if u wanna use mainnet use -m or --mainnnet         
+```
+
+
 
 ### Flags & Options
 | Flag | Description |
