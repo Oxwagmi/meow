@@ -1365,6 +1365,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "dialoguer"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "658bce805d770f407bc62102fca7c2c64ceef2fbcb2b8bd19d2765ce093980de"
+dependencies = [
+ "console",
+ "shell-words",
+ "tempfile",
+ "thiserror",
+ "zeroize",
+]
+
+[[package]]
 name = "digest"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2697,10 +2710,13 @@ version = "0.1.0"
 dependencies = [
  "anchor-client",
  "anyhow",
+ "base64 0.21.7",
  "clap 4.5.32",
+ "dialoguer 0.11.0",
  "dotenv",
  "hex",
  "hex-literal",
+ "message-transmitter",
  "once_cell",
  "reqwest 0.12.4",
  "serde",
@@ -4596,7 +4612,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3e71075e996f5b9ac83f6fb068361fd2f4bcd7319832b3eea1ef2f705d84942b"
 dependencies = [
  "console",
- "dialoguer",
+ "dialoguer 0.10.4",
  "log",
  "num-derive",
  "num-traits",
