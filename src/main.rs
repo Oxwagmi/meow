@@ -111,7 +111,7 @@ async fn main() {
             retry_secs,
         } => {
             println!("Starting manual redeem USDC");
-
+            init_solana_manager(mainnet).unwrap();
             let tx_hash = if is_solana_tx(&txn_hash) {
                 TxHash::Solana(
                     txn_hash
@@ -148,6 +148,7 @@ async fn main() {
                     if remote_usdc.is_empty() {
                         panic!(" Remote USDC address from evm chains is required to claim usdc on solana chain  ");
                     }
+                    println!( "remote_usdc: {:?}", remote_usdc);
                     call_recieve_message(
                         &remote_usdc.to_string().as_str(),
                         &attestation_data.message,
