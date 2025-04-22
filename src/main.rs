@@ -113,13 +113,14 @@ async fn main() {
             println!("Starting manual redeem USDC");
             init_solana_manager(mainnet).unwrap();
             let tx_hash = if is_solana_tx(&txn_hash) {
+                println!("Detected as a Solana transaction hash");
                 TxHash::Solana(
                     txn_hash
                         .parse::<Signature>()
                         .expect("Invalid Solana Signature"),
                 )
             } else {
-                println!("🔍 Detected EVM transaction hash");
+                println!("Detected as a EVM transaction hash");
                 TxHash::Ethereum(txn_hash.parse::<H256>().expect(" Invalid Ethereum tx hash"))
             };
 
