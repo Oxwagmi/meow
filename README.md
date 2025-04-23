@@ -29,7 +29,26 @@ This tool interacts directly with the Solana blockchain and Circle’s CCTP smar
 
 Make sure you have **Rust** installed:
 
+#### Quick installation
+
+```sh
+
+cargo install --git https://github.com/Oxwagmi/meow.git --tag v0.1.0  
+cd urfolder 
+```
+create a .env  like env.example 
+then run
+
+```sh 
+meow --help                                                                                                                                           .env file loaded successfully
+Usage: meow <COMMAND>
+```
+
+
+#### Mannual installation
 build the binary manually:
+
+git clone https://github.com/Oxwagmi/meow.git
 
 ```sh
 cargo build -r

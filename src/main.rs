@@ -85,7 +85,13 @@ async fn main() {
             let _ = manager.check_balance(1000).await.unwrap();
             //////////////////////////////////////////////////////////////////
             
-            let (sig, remote_usdc) = evm_deposit(fixed_domain, mainnet, amount).await.unwrap();
+            let (sig, remote_usdc) = match evm_deposit(fixed_domain, mainnet, amount).await {
+                Ok(res) => res,
+                Err(e) => {
+                    eprintln!("EVM Deposit failed: {:#?}", e);
+                    std::process::exit(1);
+                }
+            };
             let tx_hash = TxHash::Ethereum(sig);
             println!("Attempting to get attestation_data for tx: {:?}", sig);
             let attestation_data = get_messages(&tx_hash, mainnet, fixed_domain, retry_secs)

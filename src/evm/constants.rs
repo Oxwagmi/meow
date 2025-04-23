@@ -10,7 +10,7 @@ pub const POLYGON_POS_AMOY_CONTRACT: &str = "0x7865fAfC2db2093669d92c0F33AeEF291
 pub const UNICHAIN_SEPOLIA_CONTRACT: &str = "0xbc498c326533d675cf571B90A2Ced265ACb7d086";
 
 // Testnet RPC URLs
-pub const UNICHAIN_TESTNET_RPC_URL: &str = "https://unichain-sepolia.api.onfinality.io/public";
+pub const UNICHAIN_TESTNET_RPC_URL: &str = "https://sepolia.unichain.org";
 pub const BASE_TESTNET_RPC_URL: &str = "https://sepolia.base.org";
 pub const ETHEREUM_SEPOLIA_TESTNET_RPC_URL: &str = "https://sepolia-rpc.publicnode.com";
 pub const ARB_SEPOLIA_TESTNET_RPC_URL: &str = "https://arbitrum-sepolia-rpc.publicnode.com";
@@ -34,7 +34,7 @@ pub const OP_MAINNET_RPC_URL: &str = "https://mainnet.optimism.io/";
 pub const ARBITRUM_MAINNET_RPC_URL: &str = "https://arb1.arbitrum.io/rpc";
 pub const BASE_MAINNET_RPC_URL: &str = "https://mainnet.base.org";
 pub const POLYGON_MAINNET_RPC_URL: &str = "https://polygon-rpc.com/";
-pub const UNICHAIN_MAINNET_RPC_URL: &str = "	https://mainnet.unichain.org";
+pub const UNICHAIN_MAINNET_RPC_URL: &str = "https://mainnet.unichain.org";
 
 // Mainnet Token Messenger Contract Addresses
 pub const ETHEREUM_MAINNET_TOKEN_MESSENGER: &str = "0xBd3fa81B58Ba92a82136038B25aDec7066af3155";
