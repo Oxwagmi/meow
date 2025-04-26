@@ -17,8 +17,9 @@ pub async fn evm_deposit(
     from_domain: u32,
     mainnet: bool,
     amount: u64,
+    evm_remote_rpc: &str,
 ) -> web3::contract::Result<(H256, H160)> {
-    let evm = EvmManager::init(from_domain, mainnet).unwrap();
+    let evm = EvmManager::init(from_domain, mainnet, evm_remote_rpc).unwrap();
     let manager: &SolanaManager = SOLANA_MANAGER.get().unwrap();
     let contract = evm.token_messenger_contract;
     let usdc_contract = evm.usdc_contract;
@@ -59,7 +60,10 @@ pub async fn evm_deposit(
             None,
         )
         .await?;
-    print!("Account USDC allowance check: {} without 6 decimal division", usdc_allowance_check);
+    print!(
+        "Account USDC allowance check: {} without 6 decimal division",
+        usdc_allowance_check
+    );
     if usdc_allowance_check < U256::from(amount) {
         println!("No USDC allowance found for TokenMessenger contract.");
         let msg = format!(

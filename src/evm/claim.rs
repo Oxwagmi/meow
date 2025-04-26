@@ -9,8 +9,9 @@ pub async fn evm_claim(
     attestation: &str,
     domain: u32,
     mainnet: bool,
+    evm_rpc_url: &str,
 ) -> web3::contract::Result<H256> {
-    let evm = EvmManager::init(domain, mainnet).unwrap();
+    let evm = EvmManager::init(domain, mainnet, evm_rpc_url).unwrap();
     let web3 = evm.web3;
     let wallet_address = evm.wallet_address;
     println!(" Using Wallet Address: {:?}", wallet_address);
@@ -61,15 +62,15 @@ pub async fn evm_claim(
     Ok(tx_hash)
 }
 
-pub async fn evm_balance_check(domain: u32, mainnet: bool) {
-    let evm_manager = EvmManager::init(domain, mainnet).unwrap();
+pub async fn evm_balance_check(domain: u32, mainnet: bool, evm_rpc_url: &str) {
+    let evm_manager = EvmManager::init(domain, mainnet, evm_rpc_url).unwrap();
     let wallet_address = evm_manager.wallet_address;
     let web3 = evm_manager.web3;
     let balance = web3.eth().balance(wallet_address, None).await.unwrap();
     println!("Evm fee payer balance: {} in WEI ", balance);
     // if balance is 1 wei still not enough to pay for gas
     // if balance == U256::zero() {
-    if balance < U256::from(1_000_000_000) {
+    if balance < U256::from(1_000_000_000) { // 1 Gwei
         panic!("Insufficient balance on destination  chain fee payer");
     }
 }

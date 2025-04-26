@@ -28,6 +28,7 @@ async fn main() {
             safe_format_usdc,
             amount,
             to_chain,
+            evm_remote_rpc,
             to,
         } => {
             let domain = DestinationDomain::from_str(&to_chain)
@@ -38,7 +39,7 @@ async fn main() {
 
             init_solana_manager(mainnet).unwrap();
             println!("CHECKING BALANCES OF BOTH SIDES BEFORE SENDING....");
-            evm_balance_check(fixed_domain, mainnet).await;
+            evm_balance_check(fixed_domain, mainnet, evm_remote_rpc.as_str()).await;
             let manager: &SolanaManager = SOLANA_MANAGER.get().unwrap();
             let _ = manager.check_balance(1000).await.unwrap();
 
@@ -60,6 +61,7 @@ async fn main() {
                 &attestation_data.attestation,
                 fixed_domain,
                 mainnet,
+                evm_remote_rpc.as_str(),
             )
             .await
             .unwrap();
@@ -69,8 +71,9 @@ async fn main() {
             // safe_format_usdc,
             amount,
             from_chain,
+            evm_remote_rpc,
             // to,
-            retry_secs
+            retry_secs,
         } => {
             println!("Bridging from EVM to Solana..");
             init_solana_manager(mainnet).unwrap();
@@ -80,23 +83,24 @@ async fn main() {
 
             let fixed_domain = domain.as_u32();
             println!("CHECKING BALANCES OF BOTH SIDES BEFORE SENDING....");
-            evm_balance_check(fixed_domain, mainnet).await;
+            evm_balance_check(fixed_domain, mainnet, evm_remote_rpc.as_str()).await;
             let manager: &SolanaManager = SOLANA_MANAGER.get().unwrap();
             let _ = manager.check_balance(1000).await.unwrap();
             //////////////////////////////////////////////////////////////////
-            
-            let (sig, remote_usdc) = match evm_deposit(fixed_domain, mainnet, amount).await {
-                Ok(res) => res,
-                Err(e) => {
-                    eprintln!("EVM Deposit failed: {:#?}", e);
-                    std::process::exit(1);
-                }
-            };
+
+            let (sig, remote_usdc) =
+                match evm_deposit(fixed_domain, mainnet, amount, evm_remote_rpc.as_str()).await {
+                    Ok(res) => res,
+                    Err(e) => {
+                        eprintln!("EVM Deposit failed: {:#?}", e);
+                        std::process::exit(1);
+                    }
+                };
             let tx_hash = TxHash::Ethereum(sig);
             println!("Attempting to get attestation_data for tx: {:?}", sig);
             let attestation_data = get_messages(&tx_hash, mainnet, fixed_domain, retry_secs)
                 .await
-                .unwrap(); 
+                .unwrap();
             println!("Attestation data: {:?}", attestation_data);
             call_recieve_message(
                 remote_usdc.to_string().as_str(),
@@ -114,6 +118,7 @@ async fn main() {
             txn_hash,
             remote_domain,
             remote_usdc,
+            evm_remote_rpc,
             retry_secs,
         } => {
             println!("Starting manual redeem USDC");
@@ -131,10 +136,9 @@ async fn main() {
             };
 
             println!("⏳ Fetching attestation data for {:?}", tx_hash);
-            let attestation_data =
-                get_messages(&tx_hash, mainnet, remote_domain, retry_secs)
-                    .await
-                    .expect(" Failed to fetch attestation data");
+            let attestation_data = get_messages(&tx_hash, mainnet, remote_domain, retry_secs)
+                .await
+                .expect(" Failed to fetch attestation data");
             println!("Attestation data received!");
 
             match tx_hash {
@@ -145,6 +149,7 @@ async fn main() {
                         &attestation_data.attestation,
                         remote_domain,
                         mainnet,
+                        evm_remote_rpc.as_str(),
                     )
                     .await
                     .expect("Failed to claim on EVM");
@@ -153,9 +158,11 @@ async fn main() {
                 TxHash::Ethereum(_) => {
                     println!("claiming on  Solana  EVM usdc deposit...");
                     if remote_usdc.is_empty() {
-                        panic!(" Remote USDC address from evm chains is required to claim usdc on solana chain  ");
+                        panic!(
+                            " Remote USDC address from evm chains is required to claim usdc on solana chain  "
+                        );
                     }
-                    println!( "remote_usdc: {:?}", remote_usdc);
+                    println!("remote_usdc: {:?}", remote_usdc);
                     call_recieve_message(
                         &remote_usdc.to_string().as_str(),
                         &attestation_data.message,

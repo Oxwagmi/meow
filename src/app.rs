@@ -22,6 +22,8 @@ pub enum Command {
         safe_format_usdc: bool,
         #[arg(long)]
         to_chain: String,
+        #[arg(long, default_value = "")]
+        evm_remote_rpc: String,
         #[arg(long)]
         to: String,
         #[arg(long)]
@@ -36,6 +38,8 @@ pub enum Command {
         from_chain: String,
         // #[arg(long)]
         // to: String,
+        #[arg(long, default_value = "")]
+        evm_remote_rpc: String,
         #[arg(long)]
         amount: u64,
         #[arg(long, default_value = "10")]
@@ -50,6 +54,8 @@ pub enum Command {
         remote_domain: u32,
         #[arg(long, default_value = "")]
         remote_usdc: String,
+        #[arg(long, default_value = "")]
+        evm_remote_rpc: String,
         #[arg(long, default_value = "10")]
         retry_secs: u64,
     },

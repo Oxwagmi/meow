@@ -51,7 +51,7 @@ pub struct EvmManager {
 }
 
 impl EvmManager {
-    pub fn init(domain: u32, mainnet: bool) -> Result<Self> {
+    pub fn init(domain: u32, mainnet: bool, evm_remote_rpc: &str) -> Result<Self> {
         let destination = EVMDestinationDomain::from_u32(domain)
             .ok_or_else(|| anyhow!("Invalid domain: {}", domain))?;
 
@@ -187,6 +187,11 @@ impl EvmManager {
         let wallet_address = hex::decode(pk_address.trim_start_matches("0x"))
             .map_err(|e| web3::Error::Decoder(format!("Invalid address format: {}", e)))?;
 
+        let rpc_url = if evm_remote_rpc.is_empty() {
+            rpc_url
+        } else {
+            evm_remote_rpc
+        };
         let http = Http::new(rpc_url).map_err(|e| anyhow!("RPC connection failed: {}", e))?;
         let web3 = Web3::new(http);
 
