@@ -70,7 +70,8 @@ pub async fn evm_balance_check(domain: u32, mainnet: bool, evm_rpc_url: &str) {
     println!("Evm fee payer balance: {} in WEI ", balance);
     // if balance is 1 wei still not enough to pay for gas
     // if balance == U256::zero() {
-    if balance < U256::from(1_000_000_000) { // 1 Gwei
+    if balance < U256::from(1_000_000_000) {
+        // 1 Gwei
         panic!("Insufficient balance on destination  chain fee payer");
     }
 }

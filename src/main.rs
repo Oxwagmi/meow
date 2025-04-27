@@ -4,6 +4,7 @@ use meow::app::{App, Command};
 use meow::evm::claim::evm_balance_check;
 use meow::evm::claim::evm_claim;
 use meow::evm::deposit_for_burn::evm_deposit;
+use meow::load_env;
 use meow::solana::constants::DestinationDomain;
 use meow::solana::irismsg::TxHash;
 use meow::solana::irismsg::get_messages;
@@ -15,10 +16,11 @@ use web3::types::H256;
 // #[tokio::main(flavor = "multi_thread")]
 #[tokio::main]
 async fn main() {
-    match dotenv::from_filename(".env") {
-        Ok(_) => println!(".env file loaded successfully"),
-        Err(err) => eprintln!("Failed to load .env file: {}", err),
-    }
+    // match dotenv::from_filename(".env") {
+    //     Ok(_) => println!(".env file loaded successfully"),
+    //     Err(err) => eprintln!("Failed to load .env file: {}", err),
+    // }
+    load_env().unwrap();
 
     let app = App::parse();
 
@@ -176,6 +178,11 @@ async fn main() {
             }
 
             println!("USDC manually redeemed successfully!");
+        }
+        Command::SetEnv { path } => {
+            if let Err(e) = meow::set_env_path(path.as_str()) {
+                eprintln!("Error setting env path: {}", e);
+            }
         }
     }
 }

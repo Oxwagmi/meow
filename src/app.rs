@@ -59,4 +59,8 @@ pub enum Command {
         #[arg(long, default_value = "10")]
         retry_secs: u64,
     },
+    SetEnv {
+        #[arg(long, short, default_value = "")]
+        path: String,
+    },
 }

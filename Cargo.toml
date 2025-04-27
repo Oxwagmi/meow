@@ -7,6 +7,7 @@ edition = "2024"
 web3 = "0.19.0"
 clap = { version = "4.5.32", features = ["derive"] }
 dialoguer = "0.11"
+dirs = "5.0"
 serde_json = "1.0"
 anchor-client = { version = "0.28.0 ", features = ["async"] }
 reqwest = { version = "0.12", features = ["json", "multipart"] }
