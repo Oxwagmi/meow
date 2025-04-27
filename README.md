@@ -32,9 +32,8 @@ Make sure you have **Rust** installed:
 #### Quick installation
 
 ```sh
-
-cargo install --git https://github.com/Oxwagmi/meow.git --tag v0.1.0  
-cd urfolder 
+cargo install --git https://github.com/Oxwagmi/meow.git --tag v0.1.2
+meow set-env --path ~/urenvpath/.env    
 ```
 create a .env  like env.example 
 then run
