@@ -1,6 +1,6 @@
 # `Meow`
 
- **A CLI tool for transfering USDC from Solana to other evm chains via Circle’s CCTP.**
+ **A CLI tool to bridge USDC between Solana and other evm chains via Circle’s CCTP.**
 
 
 ---
@@ -8,7 +8,7 @@
 ##  Overview
 ![meooow](meow.jpeg )
 
-`meow` is a command-line tool that enables seamless **USDC transfers** from **Solana** to **other evm chains** using Circle’s Cross-Chain Transfer Protocol (CCTP).
+`meow` is a command-line tool that enables seamless **USDC transfers** between **Solana** to **other evm chains** using Circle’s Cross-Chain Transfer Protocol (CCTP).
 
 This tool interacts directly with the Solana blockchain and Circle’s CCTP smart contracts, ensuring efficient cross-chain USDC transfers.
 
@@ -18,7 +18,7 @@ This tool interacts directly with the Solana blockchain and Circle’s CCTP smar
 
 ##  Features
 
-- **Transfer USDC** from **Solana** to supported **EVM chains** (Ethereum, Unichain, etc.).
+- **Transfer USDC** between **Solana** to supported **EVM chains** (Ethereum, Unichain, etc.).
 - **Cross-chain execution** powered by **Circle CCTP**.Bridge USDC across different chains with zero slippage and fees.
 - **Lightweight & fast**, built in Rust for performance.
 - **Non-custodial**, you control your private keys.
