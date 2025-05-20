@@ -18,6 +18,7 @@ pub async fn evm_deposit(
     mainnet: bool,
     amount: u64,
     evm_remote_rpc: &str,
+    to: &str,
 ) -> web3::contract::Result<(H256, H160)> {
     let evm = EvmManager::init(from_domain, mainnet, evm_remote_rpc).unwrap();
     let manager: &SolanaManager = SOLANA_MANAGER.get().unwrap();
@@ -120,8 +121,15 @@ pub async fn evm_deposit(
     } else {
         Pubkey::from_str("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU").unwrap()
     };
+    let to_account: Pubkey = if !to.is_empty() {
+        Pubkey::from_str(to).expect("Invalid solana address")
+    } else {
+        let default_pubkey = manager.payer.pubkey();
+        println!("Using default destination account: {:?}", default_pubkey);
+        default_pubkey
+    };
     let associated_token_account =
-        get_associated_token_address(&manager.payer.pubkey(), &usdc_address);
+        get_associated_token_address(&to_account, &usdc_address);
     let solana_address_to_hex =
         solana_address_to_hex(associated_token_account.to_string().as_str());
     // println!("Solana usdc token programme account to hex: {:?}", solana_address_to_hex);

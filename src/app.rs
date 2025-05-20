@@ -36,8 +36,8 @@ pub enum Command {
         // safe_format_usdc: bool,
         #[arg(long)]
         from_chain: String,
-        // #[arg(long)]
-        // to: String,
+        #[arg(long,default_value = "")]
+        to: String,
         #[arg(long, default_value = "")]
         evm_remote_rpc: String,
         #[arg(long)]
@@ -50,6 +50,8 @@ pub enum Command {
         mainnet: bool,
         #[arg(long)]
         txn_hash: String,
+        #[arg(long, default_value = "")]
+        to: String,
         #[arg(long)]
         remote_domain: u32,
         #[arg(long, default_value = "")]

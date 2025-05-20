@@ -74,7 +74,7 @@ async fn main() {
             amount,
             from_chain,
             evm_remote_rpc,
-            // to,
+            to,
             retry_secs,
         } => {
             println!("Bridging from EVM to Solana..");
@@ -91,7 +91,7 @@ async fn main() {
             //////////////////////////////////////////////////////////////////
 
             let (sig, remote_usdc) =
-                match evm_deposit(fixed_domain, mainnet, amount, evm_remote_rpc.as_str()).await {
+                match evm_deposit(fixed_domain, mainnet, amount, evm_remote_rpc.as_str(),to.as_str()).await {
                     Ok(res) => res,
                     Err(e) => {
                         eprintln!("EVM Deposit failed: {:#?}", e);
@@ -110,6 +110,7 @@ async fn main() {
                 &attestation_data.attestation,
                 fixed_domain,
                 mainnet,
+                &to
             )
             .await
             .unwrap();
@@ -122,6 +123,7 @@ async fn main() {
             remote_usdc,
             evm_remote_rpc,
             retry_secs,
+            to
         } => {
             println!("Starting manual redeem USDC");
             init_solana_manager(mainnet).unwrap();
@@ -171,6 +173,7 @@ async fn main() {
                         &attestation_data.attestation,
                         remote_domain,
                         mainnet,
+                        &to
                     )
                     .await
                     .expect(" Failed to call receiveMessage on Solana");

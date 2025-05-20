@@ -212,6 +212,7 @@ pub async fn call_recieve_message(
     attestation_hex: &str,
     remote_domain: u32,
     mainnet: bool,
+    to : &str,
 ) -> Result<Signature> {
     let manager: &SolanaManager = SOLANA_MANAGER.get().unwrap();
     let payer = manager.payer();
@@ -287,9 +288,9 @@ pub async fn call_recieve_message(
 
     let nonce_pda = simulate_instruction(&manager.rpc_client, first_instruction, &payer)?;
     let spl_token_program = Pubkey::from_str("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")?;
-
+     
     let user_token_account =
-        ensure_token_account_exists(manager, &usdc_address, &spl_token_program).await?;
+        ensure_token_account_exists(manager, &usdc_address, &spl_token_program,to).await?;
 
     let tx = message_transmitter
         .request()
@@ -355,7 +356,7 @@ pub async fn call_deposit_for_burn(
         Pubkey::from_str("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU")?
     };
     let user_token_account =
-        ensure_token_account_exists(manager, &usdc_address, &spl_token_program).await?;
+        ensure_token_account_exists(manager, &usdc_address, &spl_token_program,"").await?;
     let ev_auth = Pubkey::from_str("CNfZLeeL4RUxwfPnjA3tLiQt4y43jp4V7bMpga673jf9")?;
 
     let message_transmitter = client.program(Pubkey::from_str(
@@ -469,8 +470,16 @@ pub async fn ensure_token_account_exists(
     manager: &SolanaManager,
     mint: &Pubkey,
     spl_token_program: &Pubkey,
+    to: &str,
 ) -> Result<Pubkey> {
-    let associated_token_account = get_associated_token_address(&manager.payer.pubkey(), mint);
+    let to_account: Pubkey = if !to.is_empty() {
+        Pubkey::from_str(to).expect("Invalid solana address")
+    } else {
+        let default_pubkey = manager.payer.pubkey();
+        println!("Using default destination account: {:?}", default_pubkey);
+        default_pubkey
+    };
+    let associated_token_account = get_associated_token_address(&to_account, mint);
     let account_exists = manager
         .rpc_client
         .get_account(&associated_token_account)
@@ -484,7 +493,7 @@ pub async fn ensure_token_account_exists(
 
         let create_account_ix = create_associated_token_account(
             &manager.payer.pubkey(),
-            &manager.payer.pubkey(),
+            &to_account,
             mint,
             spl_token_program,
         );
